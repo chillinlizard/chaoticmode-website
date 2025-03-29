@@ -1,11 +1,540 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+// Get all blog posts and sort by publication date (newest first)
+const allPosts = await getCollection("blog");
+const sortedPosts = allPosts.sort(
+    (a, b) =>
+        new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime(),
+);
+
+// Get the two most recent posts
+const latestPost = sortedPosts[0];
+const secondLatestPost = sortedPosts[1];
 ---
 
 <Layout>
-	<Welcome />
+    <!-- Screen 1 Structure -->
+    <div class="content-grid home-screen-grid" slot="screen1">
+        <!-- Page Title -->
+        <div class="page-title home">Home</div>
+
+        <!-- Main Container Window (always open) -->
+        <div class="layout_cell home-main-cell">
+            <div class="window" id="main-container">
+                <!-- Main container content remains unchanged -->
+                <div class="window-header">
+                    <div class="window-title">
+                        <img
+                            src="/assets/minecraft-sword.png"
+                            class="window-title-icon"
+                            alt="Main"
+                        />
+                        Initiation
+                    </div>
+                    <div class="window-controls">
+                        <div class="window-control minimize minimize-fake">
+                        </div>
+                        <div class="window-control maximize maximize-fake">
+                        </div>
+                    </div>
+                </div>
+                <div class="window-content">
+                    <div class="main-section">
+                        <div class="content-container">
+                            <h2 class="glitch glitch-text">
+                                ENTER <br /> CHAOTIC MODE
+                            </h2>
+                            <p>
+                                Ditch the overplanning. Keep moving. Keep
+                                creating.
+                            </p>
+
+                            <p class="glitch-text-2">
+                                We're indie devs obsessed with creating worlds
+                                that feel alive, where every moment and
+                                discovery matters.
+                            </p>
+                            <p>
+                                Hit all the buttons and icons, or keep
+                                scrolling. <br />Blog lies ahead.
+                            </p>
+                            <div class="button-container">
+                                <div class="button-shadow"></div>
+                                <a href="#" class="custom-button-3">TOUCH ME</a>
+                            </div>
+                            <div class="button-container">
+                                <div class="button-shadow"></div>
+                                <a
+                                    href="#"
+                                    class="custom-button-4"
+                                    id="3easterEggButton">TOUCH ME</a
+                                >
+                            </div>
+                            <div class="mobile-buttons-flex-container">
+                                <div class="button-container mobile-only">
+                                    <a
+                                        href="https://www.patreon.com/"
+                                        class="image-button"
+                                        id="redirect-button-mobile-patreon"
+                                    >
+                                        <img
+                                            src="/assets/patreon-long.svg"
+                                            alt="Patreon"
+                                            class="button-image"
+                                        />
+                                    </a>
+                                </div>
+                                <div class="button-container mobile-only">
+                                    <a
+                                        href="https://www.paypal.com/"
+                                        class="image-button"
+                                        id="redirect-button-mobile-paypal"
+                                    >
+                                        <img
+                                            src="/assets/paypal-logo.svg"
+                                            alt="PayPal"
+                                            class="button-image"
+                                        />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top-Right Container Window -->
+        <div class="layout_cell home-topright-cell">
+            <div class="window fixed-window" id="top-right-container">
+                <!-- Top-right container content remains unchanged -->
+                <div class="window-header">
+                    <div class="window-title">
+                        <img
+                            src="/assets/pepsi.png"
+                            class="window-title-icon"
+                            alt="Info"
+                        />
+                        Game.exe
+                    </div>
+                    <div class="window-controls">
+                        <div class="window-control minimize window-minimize">
+                        </div>
+                        <div class="window-control maximize window-maximize">
+                        </div>
+                    </div>
+                </div>
+                <div class="window-content">
+                    <div class="main-section">
+                        <div class="content-container">
+                            <h3>Upcoming Project...</h3>
+                            <p>
+                                We are deep in development. Check later for
+                                updates. 🤪
+                            </p>
+                            <div class="button-container">
+                                <a
+                                    href="#"
+                                    class="image-button steam-button"
+                                    id="steam-redirect-button"
+                                >
+                                    <img
+                                        src="/assets/steam-pixel-button.png"
+                                        alt="Steam"
+                                        class="button-image"
+                                    />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secondary Container Window -->
+        <div class="layout_cell home-bottomright-cell">
+            <div class="window" id="secondary-container">
+                <!-- Secondary container content remains unchanged -->
+                <div class="window-header">
+                    <div class="window-title">
+                        <img
+                            src="/assets/pixel-heart.png"
+                            class="window-title-icon"
+                            alt="Secondary"
+                        />
+                        Give $, pls...
+                    </div>
+                    <div class="window-controls">
+                        <div class="window-control minimize window-minimize">
+                        </div>
+                        <div class="window-control maximize window-maximize">
+                        </div>
+                    </div>
+                </div>
+                <div class="window-content">
+                    <div class="main-section">
+                        <div class="content-container">
+                            <h3>Help us not starve. 💖</h3>
+                            <p>
+                                Invest in our survival, get awesome games in
+                                return!
+                            </p>
+                            <div class="button-container">
+                                <a
+                                    href="https://www.patreon.com/"
+                                    class="image-button"
+                                    id="redirect-button"
+                                >
+                                    <img
+                                        src="/assets/patreon-long.svg"
+                                        alt="Patreon"
+                                        class="button-image"
+                                    />
+                                </a>
+                            </div>
+                            <div class="button-container">
+                                <a
+                                    href="https://www.paypal.com/"
+                                    class="image-button"
+                                    id="redirect-button"
+                                >
+                                    <img
+                                        src="/assets/paypal-logo.svg"
+                                        alt="PayPal"
+                                        class="button-image"
+                                    />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- About Window -->
+        <div class="layout_cell">
+            <div class="window" id="about">
+                <!-- About window content remains unchanged -->
+                <div class="window-header">
+                    <div class="window-title">
+                        <img
+                            src="/assets/pixel-heart.png"
+                            class="window-title-icon"
+                            alt="About"
+                        />
+                        Our team
+                    </div>
+                    <div class="window-controls">
+                        <div class="window-control minimize window-minimize">
+                        </div>
+                        <div class="window-control maximize window-maximize">
+                        </div>
+                    </div>
+                </div>
+                <div class="window-content about-content">
+                    <div class="about-title">WHO ARE WE?</div>
+                    <div class="about-text">
+                        Good question. We're still figuring that out. Contact
+                        info coming… someday.
+                        <br /><br />
+                        © Chaotic Mode Studio, 2025
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen 2 Structure -->
+    <div class="content-grid blog-screen-grid" slot="screen2">
+        <!-- Page Title -->
+        <div class="page-title blog">Blog</div>
+
+        <!-- First Blog Post Window - Latest Post -->
+        <div class="layout_cell blog-item-1-cell">
+            <div
+                class="window fixed-window blog-window"
+                id="blog-container-1"
+                data-post-slug={latestPost?.slug || ""}
+            >
+                <div class="window-header">
+                    <div class="window-title">
+                        <img
+                            src="/assets/pixel-art.png"
+                            class="window-title-icon"
+                            alt="Blog"
+                        />
+                        Latest Post
+                    </div>
+                    <div class="window-controls">
+                        <div class="window-control minimize minimize-fake">
+                        </div>
+                        <div class="window-control maximize maximize-fake">
+                        </div>
+                    </div>
+                </div>
+                <div class="window-content">
+                    <div class="main-section">
+                        <div class="content-container">
+                            {
+                                latestPost && (
+                                    <>
+                                        {latestPost.data.image && (
+                                            <div class="post-image-container">
+                                                <img
+                                                    src={latestPost.data.image}
+                                                    alt={latestPost.data.title}
+                                                    class="post-preview-image"
+                                                />
+                                            </div>
+                                        )}
+                                        <h3>
+                                            {latestPost.data.title.length > 50
+                                                ? latestPost.data.title.slice(
+                                                      0,
+                                                      50,
+                                                  ) + "..."
+                                                : latestPost.data.title}
+                                        </h3>
+                                        <p>
+                                            {latestPost.data.description
+                                                ? latestPost.data.description
+                                                      .length > 80
+                                                    ? latestPost.data.description.slice(
+                                                          0,
+                                                          80,
+                                                      ) + "..."
+                                                    : latestPost.data
+                                                          .description
+                                                : "Click to read more about this post."}
+                                        </p>
+                                        <p class="post-date">
+                                            {new Date(
+                                                latestPost.data.pubDate,
+                                            ).toLocaleDateString("en-US", {
+                                                year: "numeric",
+                                                month: "short",
+                                                day: "numeric",
+                                            })}
+                                        </p>
+                                    </>
+                                )
+                            }
+                            {
+                                !latestPost && (
+                                    <>
+                                        <h3>No Posts Yet</h3>
+                                        <p>Check back soon for blog updates!</p>
+                                    </>
+                                )
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Second Blog Post Window - Second Latest Post -->
+        <div class="layout_cell blog-item-2-cell">
+            <div
+                class="window fixed-window blog-window"
+                id="blog-container-2"
+                data-post-slug={secondLatestPost?.slug || ""}
+            >
+                <div class="window-header">
+                    <div class="window-title">
+                        <img
+                            src="/assets/pixel-art.png"
+                            class="window-title-icon"
+                            alt="Blog"
+                        />
+                        Featured Post
+                    </div>
+                    <div class="window-controls">
+                        <div class="window-control minimize minimize-fake">
+                        </div>
+                        <div class="window-control maximize maximize-fake">
+                        </div>
+                    </div>
+                </div>
+                <div class="window-content">
+                    <div class="main-section">
+                        <div class="content-container">
+                            {
+                                secondLatestPost && (
+                                    <>
+                                        {secondLatestPost.data.image && (
+                                            <div class="post-image-container">
+                                                <img
+                                                    src={
+                                                        secondLatestPost.data
+                                                            .image
+                                                    }
+                                                    alt={
+                                                        secondLatestPost.data
+                                                            .title
+                                                    }
+                                                    class="post-preview-image"
+                                                />
+                                            </div>
+                                        )}
+                                        <h3>
+                                            {secondLatestPost.data.title
+                                                .length > 50
+                                                ? secondLatestPost.data.title.slice(
+                                                      0,
+                                                      50,
+                                                  ) + "..."
+                                                : secondLatestPost.data.title}
+                                        </h3>
+                                        <p>
+                                            {secondLatestPost.data.description
+                                                ? secondLatestPost.data
+                                                      .description.length > 80
+                                                    ? secondLatestPost.data.description.slice(
+                                                          0,
+                                                          80,
+                                                      ) + "..."
+                                                    : secondLatestPost.data
+                                                          .description
+                                                : "Click to read more about this post."}
+                                        </p>
+                                        <p class="post-date">
+                                            {new Date(
+                                                secondLatestPost.data.pubDate,
+                                            ).toLocaleDateString("en-US", {
+                                                year: "numeric",
+                                                month: "short",
+                                                day: "numeric",
+                                            })}
+                                        </p>
+                                    </>
+                                )
+                            }
+                            {
+                                !secondLatestPost && (
+                                    <>
+                                        <h3>No Second Post Yet</h3>
+                                        <p>We're working on more content!</p>
+                                    </>
+                                )
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Third Blog Post Window - Link to All Posts -->
+        <div class="layout_cell blog-item-3-cell">
+            <div class="window fixed-window blog-window" id="blog-container-3">
+                <div class="window-header">
+                    <div class="window-title">
+                        <img
+                            src="/assets/pixel-art.png"
+                            class="window-title-icon"
+                            alt="Blog"
+                        />
+                        All Posts
+                    </div>
+                    <div class="window-controls">
+                        <div class="window-control minimize minimize-fake">
+                        </div>
+                        <div class="window-control maximize maximize-fake">
+                        </div>
+                    </div>
+                </div>
+                <div class="window-content">
+                    <div class="main-section">
+                        <div class="content-container">
+                            <p>Click to view all blog posts</p>
+                            <div class="arrow-container">
+                                <img
+                                    src="/assets/arrow-blog-go.svg"
+                                    class="arrow-svg"
+                                    alt="Blog"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Terminal Window -->
+        <div class="layout_cell blog-terminal-cell">
+            <div
+                class="window fixed-window terminal-window"
+                id="terminal-container"
+            >
+                <div class="window-header">
+                    <div class="window-title">
+                        <img
+                            src="/assets/terminal-icon.png"
+                            class="window-title-icon"
+                            alt="Terminal"
+                        />
+                        Social Terminal
+                    </div>
+                    <div class="window-controls">
+                        <div class="window-control minimize minimize-fake">
+                        </div>
+                        <div class="window-control maximize maximize-fake">
+                        </div>
+                    </div>
+                </div>
+                <div class="window-content terminal-content">
+                    <div class="terminal-output">
+                        <p class="terminal-line">
+                            $&nbsp;<span class="terminal-command"
+                                >initialize social_connection.exe</span
+                            >
+                        </p>
+                        <p class="terminal-line terminal-response">
+                            Loading social networks...
+                        </p>
+                        <p class="terminal-line terminal-response">
+                            Connection established!
+                        </p>
+                        <p class="terminal-line terminal-response blink-text">
+                            Don't be a stranger, ever. Go on, say hi! 👋
+                        </p>
+                        <div class="social-links-container">
+                            <a
+                                href="https://telegram.org/"
+                                class="social-link-terminal"
+                            >
+                                <img
+                                    src="/assets/twitter-pixel.png"
+                                    alt="Twitter"
+                                    class="social-icon-terminal"
+                                />
+                                <span>Telegram</span>
+                            </a>
+                            <a
+                                href="https://discord.com/"
+                                class="social-link-terminal"
+                            >
+                                <img
+                                    src="/assets/discord-pixel.png"
+                                    alt="Discord"
+                                    class="social-icon-terminal"
+                                />
+                                <span>Discord</span>
+                            </a>
+                            <a
+                                href="https://www.linkedin.com/"
+                                class="social-link-terminal"
+                            >
+                                <img
+                                    src="/assets/linkedin-pixel.png"
+                                    alt="LinkedIn"
+                                    class="social-icon-terminal"
+                                />
+                                <span>LinkedIn</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </Layout>

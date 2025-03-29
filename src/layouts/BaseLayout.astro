@@ -1,0 +1,91 @@
+---
+
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>My Game Studio</title>
+        <link rel="stylesheet" href="/styles/styles.css" />
+    </head>
+    <body>
+        <!-- Desktop Container for multiple screens -->
+        <div class="desktop-container" id="game">
+            <!-- Left sidebar for icons (should be fixed, but now just duplicated) -->
+            <header class="layout_header">
+                <div class="icon" data-window="main-container">
+                    <img
+                        src="/assets/aseprite.png"
+                        class="icon-img"
+                        alt="Home"
+                    />
+                    <div class="icon-text">Home</div>
+                </div>
+                <div class="icon" data-window="game">
+                    <img src="/assets/pepsi.png" class="icon-img" alt="Game" />
+                    <div class="icon-text">Game</div>
+                </div>
+                <div class="icon" data-window="blog">
+                    <img
+                        src="/assets/pixel-art.png"
+                        class="icon-img"
+                        alt="Blog"
+                    />
+                    <div class="icon-text">Blog</div>
+                </div>
+                <div class="icon" data-window="about">
+                    <img
+                        src="/assets/girl-face-pixel-icon.png"
+                        class="icon-img"
+                        alt="about"
+                    />
+                    <div class="icon-text">Team</div>
+                </div>
+            </header>
+
+            <!-- Desktop Screens -->
+            <div
+                class="layout desktop-screen desktop-screen-1 active-screen crt-screen crt-scanlines"
+            >
+                <!-- Main Section Area -->
+                <main class="layout_main">
+                    <slot name="screen1" />
+                </main>
+            </div>
+
+            <!-- Second Desktop Screen -->
+            <div
+                class="layout desktop-screen desktop-screen-2 crt-screen crt-scanlines"
+            >
+                <!-- Main Section Area for Screen 2 -->
+                <main class="layout_main">
+                    <slot name="screen2" />
+                </main>
+                <div class="powered-by mobile">
+                    Powered by Chaotic Mode Studio @ 2025
+                </div>
+            </div>
+
+            <!-- Taskbar (now fixed) -->
+            <footer class="layout_footer">
+                <div class="start-button">
+                    <img
+                        src="/assets/pixel-cow.png"
+                        class="start-logo"
+                        alt="Start"
+                    />
+                    <span class="start-text">Start</span>
+                </div>
+                <!-- Minimized windows will appear here -->
+            </footer>
+        </div>
+        <div class="powered-by desktop">
+            Powered by Chaotic Mode Studio @ 2025
+        </div>
+
+        <!-- Load the external JavaScript -->
+        <script src="/scripts/main.js" defer></script>
+    </body>
+</html>

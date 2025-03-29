@@ -1,0 +1,291 @@
+---
+import Layout from "../../layouts/BlogLayout.astro";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const post = await getCollection("blog").then((posts) =>
+  posts.find((p) => p.slug === slug),
+);
+
+if (!post) {
+  throw new Error(`Post not found: ${slug}`);
+}
+
+// Render the Markdown content to HTML
+const { Content } = await post.render();
+const pubDate = new Date(post.data.pubDate);
+
+// Calculate estimated reading time (200 words per minute)
+const words = post.body.split(/\s+/).length;
+const readingTime = Math.ceil(words / 200); // Rounds up to nearest minute
+
+// Get all posts and sort them by date (newest to oldest)
+const allPosts = await getCollection("blog");
+const sortedPosts = allPosts.sort(
+  (a, b) =>
+    new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime(),
+);
+
+// Get related posts (latest 3 excluding current)
+const relatedPosts = sortedPosts.filter((p) => p.slug !== slug).slice(0, 3);
+
+// Find trending posts (posts with trending: true in frontmatter)
+const trendingPosts = sortedPosts
+  .filter((p) => p.data.trending === true && p.slug !== slug)
+  .map((p) => ({
+    title: p.data.title,
+    url: `/blog/${p.slug}`,
+    image: p.data.image || null,
+  }))
+  .slice(0, 3);
+
+// Find the current post's index in the sorted array
+const currentIndex = sortedPosts.findIndex((p) => p.slug === slug);
+
+// Next post is the post published BEFORE (newer than) the current post
+const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
+
+// Previous post is the post published AFTER (older than) the current post
+const prevPost =
+  currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
+---
+
+<Layout title={post.data.title} showPageTitle={false} isPostPage={true}>
+  <div class="content-grid blog-post-grid">
+    <!-- Main content window - Blog Post -->
+    <div class="layout_cell blog-post-area">
+      <div id="blog-post-body" class="window fixed-window">
+        <div class="window-header">
+          <div class="window-title">
+            <img
+              src="/assets/terminal-icon.png"
+              class="window-title-icon"
+              alt="Blog Post"
+            />
+            Blog Post
+          </div>
+          <div class="window-controls">
+            <div class="window-control minimize"></div>
+            <div class="window-control maximize"></div>
+          </div>
+        </div>
+        <div class="window-content">
+          <div class="post-header">
+            <div class="post-meta">
+              <div class="author-name">
+                {post.data.author || "Unknown Author"} / &nbsp
+              </div>
+              <div class="post-date">
+                {
+                  pubDate.toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })
+                }
+              </div>
+            </div>
+            <div class="post-title h1">
+              {post.data.title}
+            </div>
+            <div class="post-reading-time">
+              <span class="time-icon">⏱️</span>
+              {readingTime} min read
+            </div>
+          </div>
+
+          <div class="post-content">
+            <Content />
+
+            <!-- Add the author/date below the content -->
+            <div class="post-footer-meta">
+              <!-- Author and Date with vertical accent line -->
+              <div class="post-author-line">
+                <span class="accent-line"></span>
+                Posted by <span class="author-name-highlight"
+                  >{post.data.author || "John Doe"}</span
+                > on {
+                  pubDate.toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })
+                }
+
+                <!-- Like and Share buttons inline -->
+                <div class="post-social-actions">
+                  <button
+                    class="social-action-button like-button"
+                    id="likeButton"
+                  >
+                    <span class="heart-icon">♥</span> Like <span
+                      class="like-counter"
+                      id="likeCounter">0</span
+                    >
+                  </button>
+                  <div class="share-sect">
+                    <button
+                      class="social-action-button share-button"
+                      id="shareButton"
+                    >
+                      <span class="share-icon">»</span> Share
+                    </button>
+                    <!-- Notification for copied link -->
+                    <div class="copied-notification" id="copiedNotification">
+                      Copied!
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Divider -->
+              <div class="post-divider"></div>
+
+              <!-- Tags Section - Only show if tags exist -->
+              {
+                post.data.tags && post.data.tags.length > 0 && (
+                  <div class="post-tags">
+                    <span class="tags-label">Tags:</span>
+                    {post.data.tags.map((tag) => (
+                      <span class="post-tag">#{tag}</span>
+                    ))}
+                  </div>
+                )
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add the "Want to keep up to date?" section outside the post window -->
+    <div class="post-engagement-section">
+      <h2 class="engagement-heading">Want to keep up to date?</h2>
+
+      <div class="engagement-buttons">
+        <a
+          href="https://telegram.org/"
+          class="engagement-button newsletter-button"
+        >
+          <span class="button-icon">
+            <img
+              src="/assets/telegram.svg"
+              alt="Telegram"
+              class="telegram-icon"
+            />
+          </span>
+          Join our Telegram
+        </a>
+
+        <a href="https://discord.gg/" class="engagement-button discord-button">
+          <span class="button-icon">
+            <img
+              src="/assets/discord-pixel.png"
+              alt="Discord"
+              class="discord-icon"
+            />
+          </span>
+          Join our Discord
+        </a>
+      </div>
+
+      <!-- Add the Next/Previous post navigation -->
+      <div class="post-navigation">
+        <div class="nav-previous">
+          {
+            nextPost && (
+              <div>
+                <h3 class="nav-label">Next Post</h3>
+                <a href={`/blog/${nextPost.slug}/`} class="nav-post-link">
+                  <div class="nav-post-title">{nextPost.data.title}</div>
+                  <div class="nav-post-date">
+                    {new Date(nextPost.data.pubDate).toLocaleDateString(
+                      "en-US",
+                      {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      },
+                    )}
+                  </div>
+                </a>
+              </div>
+            )
+          }
+          {!nextPost && <div class="nav-placeholder" />}
+        </div>
+
+        <div class="nav-next">
+          {
+            prevPost && (
+              <div>
+                <h3 class="nav-label">Previous Post</h3>
+                <a href={`/blog/${prevPost.slug}/`} class="nav-post-link">
+                  <div class="nav-post-title">{prevPost.data.title}</div>
+                  <div class="nav-post-date">
+                    {new Date(prevPost.data.pubDate).toLocaleDateString(
+                      "en-US",
+                      {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      },
+                    )}
+                  </div>
+                </a>
+              </div>
+            )
+          }
+          {!prevPost && <div class="nav-placeholder" />}
+        </div>
+      </div>
+    </div>
+
+    <div class="layout_cell right-sidebar">
+      <div class="empty-window">
+        <div class="cactus-decoration">
+          <img
+            src="/assets/pixel-cactus.png"
+            alt="Decorative Cactus"
+            class="cactus-image"
+          />
+        </div>
+      </div>
+      <div class="window fixed-window">
+        <div class="window-header">
+          <div class="window-title">
+            <img
+              src="/assets/pixel-art.png"
+              class="window-title-icon"
+              alt="Blog Icon"
+            />
+            Table of Contents
+          </div>
+          <div class="window-controls">
+            <div class="window-control minimize"></div>
+            <div class="window-control maximize"></div>
+          </div>
+        </div>
+        <div class="window-content toc-container">
+          <div id="toc-list">
+            <!-- Table of contents will be generated here -->
+          </div>
+        </div>
+      </div>
+      <div class="empty-window"></div>
+    </div>
+
+    <script
+      id="trending-posts-data"
+      type="application/json"
+      set:html={JSON.stringify(trendingPosts)}
+    />
+  </div>
+</Layout>

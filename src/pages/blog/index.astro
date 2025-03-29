@@ -1,0 +1,151 @@
+---
+import Layout from "../../layouts/BlogLayout.astro";
+import { getCollection } from "astro:content";
+
+export const prerender = true;
+
+const postsPerPage = 2; // Number of posts per page
+const allPosts = (await getCollection("blog")).sort(
+  (a, b) =>
+    new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime(),
+);
+const totalPages = Math.ceil(allPosts.length / postsPerPage);
+const initialPosts = allPosts.slice(0, postsPerPage);
+---
+
+<Layout title="Blog Posts">
+  <div class="content-grid blog-index-grid">
+    <!-- Main content window - Blog Posts List -->
+    <div class="layout_cell blog-listing">
+      <div id="blog-list-container" class="window fixed-window">
+        <div class="window-header">
+          <div class="window-title">
+            <img
+              src="/assets/pixel-art.png"
+              class="window-title-icon"
+              alt="Blog Icon"
+            />
+            Blog / All Posts
+          </div>
+          <div class="window-controls">
+            <div class="window-control minimize"></div>
+            <div class="window-control maximize"></div>
+          </div>
+        </div>
+        <div class="window-content">
+          <div class="posts-list" id="posts-container">
+            {
+              initialPosts.map((post) => (
+                <div class="post-item">
+                  <div class="post-content-wrapper">
+                    <div>
+                      <a href={`/blog/${post.slug}/`} class="post-title">
+                        {post.data.title}
+                      </a>
+                      <p class="post-description">{post.data.description}</p>
+                    </div>
+                    <div class="post-date-index">
+                      {new Date(post.data.pubDate).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </div>
+                  </div>
+                  {post.data.image && (
+                    <div class="post-thumbnail">
+                      <div
+                        class="post-thumbnail-bg"
+                        style={`background-image: url('${post.data.image}')`}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))
+            }
+          </div>
+
+          <!-- Pagination controls -->
+          <div class="blog-pagination">
+            {
+              Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (pageNum) => (
+                  <button
+                    class={`page-item ${pageNum === 1 ? "current" : ""}`}
+                    data-page={pageNum}
+                  >
+                    {pageNum}
+                  </button>
+                ),
+              )
+            }
+          </div>
+        </div>
+
+        <!-- Client-side JS for pagination -->
+        <script define:vars={{ allPosts, postsPerPage }}>
+          document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".page-item").forEach((button) => {
+              button.addEventListener("click", () => {
+                const page = Number(button.getAttribute("data-page"));
+                const start = (page - 1) * postsPerPage;
+                const end = start + postsPerPage;
+                const paginatedPosts = allPosts.slice(start, end);
+
+                // Re-render posts
+                const container = document.getElementById("posts-container");
+                if (container) {
+                  container.innerHTML = paginatedPosts
+                    .map(
+                      (post) => `
+    <div class="post-item">
+      <div class="post-content-wrapper">
+        <div>
+          <a href="/blog/${post.slug}/" class="post-title">
+            ${post.data.title}
+          </a>
+          <p class="post-description">${post.data.description}</p>
+        </div>
+        <div class="post-date-index">
+          ${new Date(post.data.pubDate).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </div>
+      </div>
+      ${
+        post.data.image
+          ? `
+        <div class="post-thumbnail">
+          <div class="post-thumbnail-bg" style="background-image: url('${post.data.image}')"></div>
+        </div>
+      `
+          : ""
+      }
+    </div>
+  `,
+                    )
+                    .join("");
+
+                  // Update active button styling
+                  document
+                    .querySelectorAll(".page-item")
+                    .forEach((btn) => btn.classList.remove("current"));
+                  button.classList.add("current");
+
+                  // Scroll to top of posts container
+                  container.scrollIntoView({ behavior: "smooth" });
+                }
+              });
+            });
+          });
+        </script>
+      </div>
+    </div>
+
+    <div class="layout_cell right-sidebar">
+      <div class="empty-window"></div>
+    </div>
+  </div>
+</Layout>

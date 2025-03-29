@@ -1,0 +1,62 @@
+---
+const {
+    title = "Game Studio Blog",
+    showPageTitle = true, // New prop with default value true
+    isPostPage = false, // New prop to indicate if it's a post page
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="Game development blog with the latest updates and insights"
+        />
+        <title>{title}</title>
+        <link rel="stylesheet" href="/styles/blog-styles.css" />
+    </head>
+    <body>
+        <!-- Left Side Icons Bar -->
+        <div class="layout_header">
+            <div class="icon" data-window="main-container">
+                <img src="/assets/aseprite.png" class="icon-img" alt="Home" />
+                <div class="icon-text">Home</div>
+            </div>
+            <div class="icon" data-window="game">
+                <img src="/assets/pepsi.png" class="icon-img" alt="Game" />
+                <div class="icon-text">Game</div>
+            </div>
+            <div class="icon active" data-window="blog">
+                <img src="/assets/pixel-art.png" class="icon-img" alt="Blog" />
+                <div class="icon-text">Blog</div>
+            </div>
+            <div class="icon" data-window="about">
+                <img
+                    src="/assets/girl-face-pixel-icon.png"
+                    class="icon-img"
+                    alt="about"
+                />
+                <div class="icon-text">Team</div>
+            </div>
+        </div>
+
+        <div class="layout crt-screen crt-scanlines">
+            <!-- Main Content Area -->
+            <div class="layout_main">
+                <slot />
+            </div>
+
+            <!-- Footer -->
+            <div class="layout_footer"></div>
+
+            <!-- Powered by text -->
+            <div class="powered-by">Powered by Chaotic Mode Studio @ 2025</div>
+        </div>
+
+        <!-- Load the blog-specific JavaScript -->
+        <script src="/scripts/blog.js" defer></script>
+    </body>
+</html>

@@ -1,0 +1,1854 @@
+@font-face {
+    font-family: 'GlitchGoblin';
+    src: url('/fonts/GlitchGoblin.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Web437_IBM_VGA_8x16';
+    src: url('/fonts/Web437_IBM_DOS_ISO8.woff') format('truetype');
+}
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Web437_IBM_VGA_8x16';
+}
+
+:root {
+    /* Base spacing variables */
+    --border-thickness: .1875rem;
+    --page-block-padding: 1rem;
+    /* Vertical padding for page sections */
+    --page-inline-padding: 5%;
+    /* Horizontal padding for page sections */
+    --window-spacing: 1rem;
+    /* Space between windows/components */
+
+    /* You can also add responsive variable adjustments */
+    --title-font-size: clamp(2.5rem, 7vw + 1rem, 4.5rem);
+
+    /* Other existing variables you may have */
+    --max-width: 66ch;
+    --space-l: clamp(2rem, 1.3043rem + 3.4783vi, 4rem);
+}
+
+/* Keep these properties if you still want them */
+body {
+    background-color: #000;
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+    color: #222;
+}
+
+/* CRT Screen Effect Classes */
+.crt-screen {
+    position: relative;
+}
+
+.crt-scanlines::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom,
+            transparent 50%,
+            rgba(0, 0, 0, 0.3) 51%);
+    background-size: 100% 4px;
+    pointer-events: none;
+    opacity: 0.5;
+    z-index: 30;
+}
+
+/* Multi-desktop support */
+.desktop-container {
+    width: 100%;
+    height: 100vh;
+    overflow-y: hidden;
+    scroll-snap-type: y mandatory;
+    position: relative;
+}
+
+.desktop-screen {
+    width: 100%;
+    height: 100vh;
+    scroll-snap-align: start;
+    position: relative;
+    transition: opacity 0.5s ease;
+}
+
+.desktop-screen.active-screen {
+    z-index: 1;
+}
+
+/* Desktop navigation dots as vertical lines */
+.desktop-nav {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 100;
+}
+
+.desktop-nav-dot {
+    width: 2px;
+    height: 20px;
+    border-radius: 0;
+    background-color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.desktop-nav-dot.active {
+    background-color: rgba(255, 255, 255, 1);
+    height: 40px;
+}
+
+/* Different screens can have different background images */
+.desktop-screen-1 {
+    background-image: url('/assets/background.svg');
+    background-color: #222;
+}
+
+.desktop-screen-2 {
+    background-image: url('/assets/background.svg');
+    background-color: #222;
+}
+
+/* If no alternate background exists, this will be a fallback */
+.desktop-screen-2:not([style*="background-image"]) {
+    background-color: #223344;
+    /* Slightly different color */
+}
+
+/* Desktop */
+
+/* Main content area */
+
+.layout {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    /* Keep the same grid layout */
+    grid-template-rows: 1fr auto;
+    width: 100%;
+    min-height: 100dvh;
+}
+
+
+.layout_header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 6.5rem;
+    /* Same as your current grid template column width */
+    height: 100vh;
+    z-index: 1000;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.page-title {
+    position: relative;
+    font-size: 48px;
+    font-family: 'Web437_IBM_VGA_8x16';
+    color: white;
+    text-shadow: -3px 0 #4a2a7a, 0 3px #2d5a8a, 3px 0 #4a2a7a, 0 -3px #2d5a8a;
+    z-index: 50;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+
+.layout_main {
+    grid-column: 2;
+    /* Start from second column */
+    padding-left: 0;
+    /* No need for left padding since grid handles it */
+    min-height: 0;
+    block-size: 100%;
+    padding-block: 50px;
+    padding-inline: 5%;
+    display: flex;
+}
+
+.content-grid {
+    display: grid;
+    gap: var(--window-spacing);
+}
+
+.home-screen-grid {
+    grid-template-columns: min(60%, 80ch) 1fr;
+    grid-template-rows: auto 1fr 1fr;
+    gap: 40px;
+}
+
+.blog-screen-grid {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto 1fr;
+    gap: 40px;
+}
+
+.layout_cell {
+    align-self: stretch;
+    overflow: hidden;
+    scroll-padding-top: 5rem;
+}
+
+.home-main-cell {
+    grid-column: 1;
+    grid-row: 2 / 4;
+    justify-self: start;
+    align-self: start;
+}
+
+.home-topright-cell {
+    grid-column: 2;
+    grid-row: 2 / 3;
+    justify-self: center;
+    align-self: end;
+
+    padding-inline-start: var(--space-l);
+}
+
+.home-bottomright-cell {
+    grid-column: 2;
+    grid-row: 3 / 3;
+    justify-self: start;
+    align-self: start;
+}
+
+/* Grid areas for blog page windows */
+.blog-item-1-cell {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+    align-self: start;
+}
+
+.blog-item-2-cell {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: start;
+    align-self: start;
+}
+
+.blog-item-3-cell {
+    grid-column: 3;
+    grid-row: 2;
+    justify-self: start;
+    align-self: start;
+}
+
+.blog-terminal-cell {
+    grid-column: 1 / 4;
+    grid-row: 3;
+    justify-self: center;
+    align-self: start;
+}
+
+/* Icons */
+.icon {
+    width: 90px;
+    /* Increased icon size */
+    height: 90px;
+    /* Increased icon size */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.1s;
+    padding: 5px;
+    position: relative;
+}
+
+.icon-img {
+    width: 58px;
+    /* Increased icon image size */
+    height: 58px;
+    /* Increased icon image size */
+    margin-bottom: 8px;
+    image-rendering: pixelated;
+}
+
+.icon-text {
+    font-size: 1rem;
+    /* Slightly larger font */
+    text-align: center;
+    color: white;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Pixelated border for clicked icons */
+.icon.active {
+    position: relative;
+    outline: none;
+}
+
+.icon.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid transparent;
+    background:
+        linear-gradient(45deg, #ffffff 25%, transparent 25%) 0 0,
+        linear-gradient(-45deg, #ffffff 25%, transparent 25%) 0 2px,
+        linear-gradient(45deg, transparent 75%, #000000 75%) 2px -2px,
+        linear-gradient(-45deg, transparent 75%, #000000 75%) -2px 0px;
+    background-size: 4px 4px;
+    background-clip: border-box;
+    -webkit-background-clip: border-box;
+    -webkit-mask:
+        linear-gradient(#fff 0 0) padding-box,
+        linear-gradient(#fff 0 0);
+    mask:
+        linear-gradient(#fff 0 0) padding-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: source-out;
+    mask-composite: exclude;
+    pointer-events: none;
+    animation: fadeOutBorder 0.3s forwards;
+}
+
+@keyframes fadeOutBorder {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Taskbar */
+.layout_footer {
+    position: fixed !important;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    /* Increased taskbar height */
+    background-color: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    z-index: 1000;
+    /* Higher z-index to ensure it stays on top */
+}
+
+.powered-by.desktop {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    font-family: 'Web437_IBM_VGA_8x16';
+    z-index: 1000;
+    pointer-events: none;
+    /* So it doesn't interfere with clicks */
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.powered-by.mobile {
+    display: none;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    font-family: 'Web437_IBM_VGA_8x16';
+    z-index: 1000;
+    pointer-events: none;
+    /* So it doesn't interfere with clicks */
+    padding: 5px;
+}
+
+
+.start-button {
+    display: flex;
+    align-items: center;
+    background-color: #c0c0c0;
+    padding: 2px 12px;
+    margin-right: 10px;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #808080;
+    border-bottom: 2px solid #808080;
+    cursor: pointer;
+    height: 36px;
+    /* Adjusted for taller taskbar */
+    transition: background-color 0.1s;
+}
+
+.start-button:hover {
+    background-color: #d0d0d0;
+}
+
+.start-button:active {
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    background-color: #b0b0b0;
+}
+
+.start-logo {
+    width: 24px;
+    /* Larger logo */
+    height: 24px;
+    /* Larger logo */
+    margin-right: 5px;
+}
+
+.start-text {
+    font-size: 1rem;
+    /* Larger font */
+    font-weight: bold;
+    user-select: none;
+}
+
+/* ======================================
+ * WINDOW POSITIONING & LAYOUT
+ * ====================================== */
+
+/* Base window positioning - all windows */
+.window {
+    position: relative;
+    background-color: #202034;
+    border: var(--border-thickness) solid black !important;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+    min-width: 250px;
+    min-height: 200px;
+    z-index: 10;
+    --border-thickness: .1875rem;
+    display: none;
+    /* Default to hidden until opened */
+
+    /* Mask properties for corners */
+    mask: conic-gradient(at var(--border-thickness) var(--border-thickness),
+            #000 270deg,
+            transparent 0) 0 0 / calc(100% - var(--border-thickness)) calc(100% - var(--border-thickness));
+
+    -webkit-mask: conic-gradient(at var(--border-thickness) var(--border-thickness),
+            #000 270deg,
+            transparent 0) 0 0 / calc(100% - var(--border-thickness)) calc(100% - var(--border-thickness));
+
+    -webkit-mask-composite: source-over;
+    mask-composite: add;
+}
+
+.window.active {
+    z-index: 20;
+}
+
+/* Fixed windows always visible */
+.fixed-window {
+    display: block !important;
+}
+
+.window-header {
+    background: linear-gradient(90deg, #4a2a7a 0%, #2d5a8a 100%);
+    /* Purple to blue gradient */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    /* Increased horizontal padding */
+    height: 42px;
+    margin: 3px;
+    /* Add margin inside the window */
+}
+
+.window-title {
+    font-size: 1.375rem;
+    color: white;
+    /* Larger font */
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+.window-title-icon {
+    width: 18px;
+    /* Slightly larger icon */
+    height: 18px;
+    /* Slightly larger icon */
+    margin-right: 5px;
+}
+
+.window-controls {
+    display: flex;
+}
+
+.window-control {
+    color: black;
+    width: 30px;
+    /* Increased width */
+    height: 32px;
+    /* Increased height */
+    padding: 6px 8px;
+    background-color: #c0c0c0;
+    margin-left: 5px;
+    border-top: 3px solid #ffffff;
+    border-left: 3px solid #ffffff;
+    border-right: 3px solid #808080;
+    border-bottom: 3px solid #808080;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+/* Add these SVG data URIs to your CSS */
+.window-control.minimize {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='2' viewBox='0 0 12 2'%3E%3Cpath d='M0 0h12v2H0z' fill='%23000'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center 80%;
+    /* Moves it to the bottom */
+}
+
+.window-control.maximize {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M0 0v10h10V0H0zm9 9H1V1h8v8z' fill='%23000'/%3E%3Cpath d='M1 1h8v2H1z' fill='%23000'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 14px 14px;
+    /* Increase the size */
+}
+
+
+.window-control:hover {
+    background-color: #d0d0d0;
+}
+
+
+/* Simplify the window content structure */
+.window-content {
+    padding: 30px;
+    height: calc(100% - 46px);
+    /* Subtract header height + padding/margins */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden !important;
+    /* Prevent scrolling */
+}
+
+/* ======================================
+ * SCREEN 1 - HOME PAGE WINDOWS
+ * ====================================== */
+
+/* Main container - left aligned with page title */
+/* Set explicit sizes for windows to match your original design */
+.window#main-container {
+    width: 100%;
+    height: auto;
+}
+
+.window#top-right-container {
+    width: 320px;
+    height: auto;
+    min-height: 250px;
+}
+
+.window#secondary-container {
+    width: 100%;
+    height: auto;
+    min-height: 250px;
+}
+
+/* Main section styling */
+.main-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden !important;
+    /* Prevent scrolling */
+}
+
+.content-container {
+    width: 100%;
+    color: #fff;
+}
+
+/* Text styling in main container */
+.main-section h2 {
+    font-size: 4rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.main-section h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.main-section p {
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+/* About window */
+/* About window positioning */
+.window#about {
+    width: 500px;
+    /* Initial value, will be overridden by JS */
+    height: 250px;
+    /* Initial value, will be overridden by JS */
+    position: absolute;
+    z-index: 16;
+    /* Just above the secondary container */
+    display: none;
+    /* Hidden until opened */
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+
+/* Active highlight effect for about window when it first appears */
+.window#about.active-highlight {
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+}
+
+/* Entry animation for about window */
+.window#about.show-window {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* About window content styling - keep your existing styles */
+.about-content {
+    padding: 15px;
+    text-align: center;
+    color: white;
+}
+
+.about-logo {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 15px;
+}
+
+.about-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.about-text {
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+/* Taskbar buttons for minimized windows */
+.taskbar-button {
+    display: flex;
+    align-items: center;
+    background-color: #c0c0c0;
+    padding: 2px 12px;
+    margin-right: 10px;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #808080;
+    border-bottom: 2px solid #808080;
+    cursor: pointer;
+    height: 36px;
+    max-width: 150px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    transition: background-color 0.2s;
+}
+
+.taskbar-button:hover {
+    background-color: #d0d0d0;
+}
+
+.taskbar-button:active {
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    background-color: #b0b0b0;
+}
+
+.taskbar-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+}
+
+
+
+.distortion {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    filter: blur(8px) contrast(1.5);
+    pointer-events: none;
+    transform: scale(1);
+    transition: transform 0.2s ease-out, opacity 0.4s ease-out;
+    opacity: 0;
+    z-index: 50;
+}
+
+
+.glitch {
+    font-family: "GlitchGoblin", sans-serif;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase;
+    text-shadow: -3px 0px 0 red, 3px 0px 0 #00ff7f;
+}
+
+.button-container {
+    margin-top: 20px;
+    position: relative;
+    display: inline-flex;
+    /* Change from inline-block to inline-flex */
+    font-family: 'Web437_IBM_VGA_8x16';
+    flex-wrap: nowrap;
+    /* Prevent wrapping */
+    gap: 20px;
+    /* Add consistent spacing between buttons */
+}
+
+/* Hide the mobile buttons by default (for desktop) */
+.home-main-cell .button-container.mobile-only {
+    display: none;
+}
+
+.button-shadow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #00db28;
+    /* Shadow color */
+    z-index: 1;
+    opacity: 0;
+    /* Hidden by default */
+    transition: opacity 0.2s ease-out, top 0.2s ease-out, left 0.2s ease-out;
+}
+
+.custom-button {
+    min-width: 130px;
+    /* Adjust this value based on your longest text */
+    text-align: center;
+    /* Keep text centered */
+    white-space: nowrap;
+    /* Prevent text from wrapping */
+    position: relative;
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: white;
+    background-color: #ff5e00;
+    /* Default button color */
+    border: none;
+    cursor: pointer;
+    z-index: 2;
+    /* Button is always above shadow */
+    transition: transform 0.2s ease-out, color 0.2s ease-out;
+}
+
+.button-container:hover .custom-button {
+    transform: translateY(-2px);
+    /* Button moves up */
+    background-color: #ff9b43;
+}
+
+.button-container:hover .button-shadow {
+    opacity: 1;
+    /* Shadow appears */
+    top: 1px;
+    /* Moves shadow slightly down */
+    left: 3px;
+    /* Moves shadow slightly right */
+}
+
+.custom-button-2 {
+    min-width: 130px;
+    /* Adjust this value based on your longest text */
+    text-align: center;
+    /* Keep text centered */
+    white-space: nowrap;
+    /* Prevent text from wrapping */
+    position: relative;
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: white;
+    background-color: #ff5e00;
+    /* Default button color */
+    border: none;
+    cursor: pointer;
+    z-index: 2;
+    /* Button is always above shadow */
+    transition: transform 0.2s ease-out, color 0.2s ease-out;
+}
+
+.button-container:hover .custom-button-2 {
+    transform: translateY(-2px);
+    /* Button moves up */
+    background-color: #ff9b43;
+}
+
+.custom-button-3 {
+    min-width: 130px;
+    /* Adjust this value based on your longest text */
+    text-align: center;
+    /* Keep text centered */
+    white-space: nowrap;
+    /* Prevent text from wrapping */
+    position: relative;
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: white;
+    background-color: #ff5e00;
+    /* Default button color */
+    border: none;
+    cursor: pointer;
+    z-index: 2;
+    /* Button is always above shadow */
+    transition: transform 0.2s ease-out, color 0.2s ease-out;
+}
+
+.button-container:hover .custom-button-3 {
+    transform: translateY(-2px);
+    /* Button moves up */
+    background-color: #ff9b43;
+}
+
+.custom-button-4 {
+    min-width: 130px;
+    /* Adjust this value based on your longest text */
+    text-align: center;
+    /* Keep text centered */
+    white-space: nowrap;
+    /* Prevent text from wrapping */
+    position: relative;
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: white;
+    background-color: #ff5e00;
+    /* Default button color */
+    border: none;
+    cursor: pointer;
+    z-index: 2;
+    /* Button is always above shadow */
+    transition: transform 0.2s ease-out, color 0.2s ease-out;
+}
+
+.button-container:hover .custom-button-4 {
+    transform: translateY(-2px);
+    /* Button moves up */
+    background-color: #ff9b43;
+}
+
+.custom-button-5 {
+    min-width: 130px;
+    /* Adjust this value based on your longest text */
+    text-align: center;
+    /* Keep text centered */
+    white-space: nowrap;
+    /* Prevent text from wrapping */
+    position: relative;
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: white;
+    background-color: #ff5e00;
+    /* Default button color */
+    border: none;
+    cursor: pointer;
+    z-index: 2;
+    /* Button is always above shadow */
+    transition: transform 0.2s ease-out, color 0.2s ease-out;
+}
+
+.button-container:hover .custom-button-5 {
+    transform: translateY(-2px);
+    /* Button moves up */
+    background-color: #ff9b43;
+}
+
+.custom-button-6 {
+    min-width: 130px;
+    /* Adjust this value based on your longest text */
+    text-align: center;
+    /* Keep text centered */
+    white-space: nowrap;
+    /* Prevent text from wrapping */
+    position: relative;
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: white;
+    background-color: #1ab51d;
+    /* Default button color */
+    border: none;
+    cursor: pointer;
+    z-index: 2;
+    /* Button is always above shadow */
+    transition: transform 0.2s ease-out, color 0.2s ease-out;
+}
+
+.button-container:hover .custom-button-6 {
+    transform: translateY(-2px);
+    /* Button moves up */
+    background-color: #ff9b43;
+}
+
+@keyframes shadowSplit {
+    0% {
+        text-shadow: none;
+    }
+
+    50% {
+        text-shadow: -5px 5px 0 red, 5px -5px 0 blue;
+    }
+
+    100% {
+        text-shadow: none;
+    }
+}
+
+.shadow-effect {
+    animation: shadowSplit 1.5s ease-in-out;
+}
+
+@keyframes glitch {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    20% {
+        transform: translate(-2px, 2px);
+    }
+
+    40% {
+        transform: translate(2px, -2px);
+    }
+
+    60% {
+        transform: translate(-2px, 2px);
+    }
+
+    80% {
+        transform: translate(2px, -2px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+.glitch-effect {
+    animation: glitch 0.15s infinite;
+    text-shadow: -2px -2px 0 rgba(255, 0, 0, 0.75), 2px 2px 0 #00ff7f;
+}
+
+
+.falling-button {
+    transform: translateY(100vh) rotate(15deg);
+    /* Falls down with rotation */
+    opacity: 0;
+    transition: transform 1s ease-in, opacity 0.8s ease-in;
+    pointer-events: none;
+    /* Ensure no interactions */
+}
+
+/* Ensure hover effects stop interfering */
+.button-container:hover .falling-button {
+    transform: translateY(100vh) rotate(15deg) !important;
+    background-color: #ff5e00 !important;
+    box-shadow: none !important;
+    opacity: 0 !important;
+}
+
+/* ======================================
+ * SCREEN 2 - BLOG PAGE WINDOWS
+ * ====================================== */
+
+/* Blog windows - base styles */
+.blog-window {
+    width: 350px;
+    height: 350px;
+    z-index: 15;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    cursor: pointer;
+}
+
+/* Blog window positioning - aligned left with equal gaps */
+#blog-container-1:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    z-index: 16 !important;
+    background-color: #2a2a42;
+    /* Slightly lighter background on hover */
+}
+
+#blog-container-2:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    z-index: 16 !important;
+    background-color: #2a2a42;
+    /* Slightly lighter background on hover */
+}
+
+
+#blog-container-3:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    z-index: 16 !important;
+    background-color: #2a2a42;
+    /* Slightly lighter background on hover */
+}
+
+#blog-container-3 .main-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#blog-container-3 .arrow-container {
+    width: 80%;
+    height: 80%;
+    max-width: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px auto;
+}
+
+#blog-container-3 .arrow-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 5px rgba(255, 51, 102, 0.5));
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+#blog-container-3:hover .arrow-svg {
+    filter: drop-shadow(0 0 8px rgba(255, 51, 102, 0.8));
+}
+
+
+/* Terminal window - keeps centered positioning */
+#terminal-container {
+    width: 600px;
+    z-index: 15;
+}
+
+/* Blog window hover effect */
+.blog-window:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    z-index: 16 !important;
+}
+
+/* Blog container content styling */
+.blog-window .main-section {
+    padding: 12px;
+}
+
+.blog-window h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+    color: #00db28;
+}
+
+.blog-window p {
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 15px;
+}
+
+.blog-window .button-container {
+    margin-top: 15px;
+}
+
+/* ======================================
+ * TERMINAL WINDOW STYLING
+ * ====================================== */
+
+.terminal-window {
+    background-color: #101010 !important;
+}
+
+.terminal-content {
+    padding: 15px !important;
+    /* Slightly more padding */
+    font-family: 'Web437_IBM_VGA_8x16', monospace;
+    background-color: #101010;
+    color: #33ff33;
+    overflow: hidden !important;
+    /* Prevent scrolling */
+    height: calc(100% - 30px);
+    /* Adjusted to fit properly */
+}
+
+.terminal-line {
+    display: flex !important;
+    /* Use flex to align items */
+    margin: 4px 0;
+    height: 27px !important;
+    /* Force consistent height based on the larger value */
+    line-height: 1.4;
+    /* Keep consistent line height */
+    white-space: nowrap;
+}
+
+
+.terminal-command {
+    color: #ffffff;
+}
+
+.terminal-response {
+    margin-left: 16px;
+    color: #33ff33;
+}
+
+.terminal-cursor {
+    animation: blink 1s step-end infinite;
+}
+
+.blink-text {
+    font-weight: bold;
+    color: #ffcc00;
+}
+
+.terminal-cursor {
+    color: #33ff33;
+    font-weight: bold;
+    font-size: 1.2em;
+    /* Make it slightly larger */
+    margin-left: 1px;
+    /* Add a small gap */
+    animation: blink 0.5s step-end infinite;
+    /* Faster blinking */
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+/* Social links container - better fit */
+.social-links-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    /* More gap between social links */
+    margin: 20px 0;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.3);
+    /* Darker background for contrast */
+    border-radius: 5px;
+    opacity: 0;
+}
+
+.social-link-terminal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 18px;
+    /* Slightly larger clickable area */
+    background-color: rgba(51, 255, 51, 0.1);
+    border-radius: 5px;
+    text-decoration: none;
+    color: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.social-link-terminal:hover {
+    background-color: rgba(51, 255, 51, 0.2);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.social-icon-terminal {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 8px;
+    image-rendering: pixelated;
+}
+
+/* ======================================
+ * ANIMATIONS
+ * ====================================== */
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+@keyframes textblink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes typing {
+    from {
+        width: 0
+    }
+
+    to {
+        width: 100%
+    }
+}
+
+@keyframes blink-caret {
+
+    from,
+    to {
+        border-color: transparent
+    }
+
+    50% {
+        border-color: #33ff33
+    }
+}
+
+
+/*glitches for game-window*/
+/*glitches for game-window*/
+/*glitches for game-window*/
+/*glitches for game-window*/
+/*glitches for game-window*/
+
+/* Add to your existing CSS */
+
+/* Glitch animations for window overlays */
+
+/* Enhanced glitch effect for the entire window - just shaking, no color changes */
+.window.glitch-effect {
+    animation: windowShakeGlitch 0.1s infinite;
+    position: relative;
+    z-index: 25 !important;
+    /* Ensure it shows above other windows during the effect */
+}
+
+@keyframes windowShakeGlitch {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    10% {
+        transform: translate(-5px, 3px);
+    }
+
+    20% {
+        transform: translate(5px, 0);
+    }
+
+    30% {
+        transform: translate(0, -3px);
+    }
+
+    40% {
+        transform: translate(-3px, 1px);
+    }
+
+    50% {
+        transform: translate(3px, 2px);
+    }
+
+    60% {
+        transform: translate(0, 0);
+    }
+
+    70% {
+        transform: translate(-2px, -2px);
+    }
+
+    80% {
+        transform: translate(2px, 0);
+    }
+
+    90% {
+        transform: translate(0, 2px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+/*steam button */
+/* Image-based button styles */
+.image-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 150px;
+    padding: 12px 24px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    z-index: 2;
+    transition: transform 0.2s ease-out, filter 0.2s ease-out;
+    background-color: transparent;
+    border: none;
+}
+
+.image-button .button-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    image-rendering: pixelated;
+}
+
+.image-button .button-text {
+    position: relative;
+    z-index: 2;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Steam-specific button */
+.steam-button {
+    color: white;
+}
+
+/* Hover and active effects */
+.button-container:hover .image-button {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+.button-container:active .image-button {
+    transform: translateY(0);
+    filter: brightness(0.9);
+}
+
+/* Team Icon*/
+/* Team icon animation styling */
+.icon[data-window="about"] .icon-img {
+    transition: transform 0.1s ease-out;
+}
+
+/* Add this class via JavaScript when an image changes */
+.icon[data-window="about"] .icon-img.changing {
+    filter: brightness(1.2);
+    transition: filter 0.1s ease, transform 0.1s ease;
+}
+
+/*blog post images*/
+/* Blog post preview image container */
+.post-image-container {
+    width: 100%;
+    height: 100px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    border: 2px solid #333;
+    border-radius: 3px;
+    background-color: #161626;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Blog post preview image */
+.post-preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    image-rendering: pixelated;
+    /* For pixelated effect */
+    transition: transform 0.3s ease;
+}
+
+/* Adjust the content margins to balance the image */
+.blog-window .content-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Make sure the h3 title stands out */
+.blog-window .content-container h3 {
+    margin-top: 8px;
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #00db28;
+}
+
+/* Adjust description text to fit with the image */
+.blog-window .content-container p {
+    font-size: 14px;
+    line-height: 1.3;
+    margin-bottom: 8px;
+}
+
+/* Optional: Add a retro CRT scan effect to the images */
+@keyframes scanline {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 0 100%;
+    }
+}
+
+.post-image-container::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.03) 50%,
+            rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+    animation: scanline 6s linear infinite;
+}
+
+
+/* ======================================
+ * RESPONSIVE ADJUSTMENTS
+ * ====================================== */
+
+/* Enhanced Mobile Responsive Styles */
+
+
+/* COMPREHENSIVE MOBILE STYLING SOLUTION
+   Combines previous responsive fixes with new alignment solutions
+*/
+
+/* Base Mobile Breakpoint */
+@media (max-width: 768px) {
+
+    /* ===== DOCUMENT & CONTAINER FLOW ===== */
+    /* Force natural document flow */
+    html,
+    body {
+        overflow: auto !important;
+        height: auto !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Desktop container fixes */
+    .desktop-container {
+        scroll-snap-type: none !important;
+        height: auto !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Make all screens display in natural flow */
+    .desktop-screen {
+        height: auto !important;
+        min-height: auto !important;
+        scroll-snap-align: none !important;
+        scroll-snap-stop: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        display: block !important;
+        padding: 0 !important;
+    }
+
+    /* Specific fix for desktop-screen-2 */
+    .desktop-screen-2 {
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+    }
+
+    /* Hide desktop navigation on mobile */
+    .desktop-nav {
+        display: none !important;
+    }
+
+    /* ===== LAYOUT STRUCTURE ===== */
+    /* Convert layout to single column stacked */
+    .layout,
+    .layout.desktop-screen,
+    .layout.desktop-screen.desktop-screen-1,
+    .layout.desktop-screen.desktop-screen-2 {
+        display: block !important;
+        min-height: auto !important;
+        height: auto !important;
+        overflow-y: auto !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Header becomes a horizontal fixed bar */
+
+    .layout_header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        /* Full width */
+        height: 90px;
+        /* Fixed height */
+        flex-direction: row;
+        justify-content: center;
+        padding: 0;
+        overflow-x: auto;
+        /* Allow scrolling horizontally */
+    }
+
+    /* Adjust main content area to account for fixed header */
+    .layout_main {
+        margin-left: 0 !important;
+        margin-top: 90px !important;
+        padding-inline: 0 !important;
+        padding-block: 20px !important;
+        width: 100% !important;
+        display: block !important;
+    }
+
+    .layout.desktop-screen-2 .layout_main {
+        margin-top: 0 !important;
+    }
+
+
+    /* ===== GRID RESET ===== */
+    /* Convert all grid layouts to stacked for mobile */
+    .content-grid,
+    .content-grid.home-screen-grid,
+    .content-grid.blog-screen-grid,
+    .content-grid.blog-index-grid,
+    .content-grid.blog-post-grid {
+        display: block !important;
+        grid-template-columns: unset !important;
+        grid-template-rows: unset !important;
+        grid-column: unset !important;
+        grid-row: unset !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        gap: 20px !important;
+    }
+
+    .page-title.home {
+        display: none !important;
+    }
+
+    .page-title.blog {
+        display: relative !important;
+        padding: 16px !important;
+    }
+
+    /* Ensure content grid inside any screen is properly reset */
+    .desktop-screen .content-grid,
+    .desktop-screen-2 .content-grid {
+        display: block !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* ===== CELL POSITIONING ===== */
+    /* All cells become block-level stacked elements */
+    .layout_cell,
+    .layout_cell[class*="-cell"] {
+        width: 100% !important;
+        display: block !important;
+        margin-bottom: 20px !important;
+        grid-column: unset !important;
+        grid-row: unset !important;
+        justify-self: unset !important;
+        align-self: unset !important;
+        padding: 0 !important;
+        position: static !important;
+    }
+
+    /* HOME SCREEN SPECIFIC MOBILE ADJUSTMENTS */
+    /* Ensure all home screen areas stack properly */
+    .home-screen-grid {
+        display: block !important;
+    }
+
+    .home-main-cell,
+    .home-topright-cell {
+        grid-column: auto !important;
+        grid-row: auto !important;
+        justify-self: auto !important;
+        align-self: auto !important;
+        width: 100% !important;
+        margin-bottom: 20px !important;
+    }
+
+    .layout_cell.home-bottomright-cell {
+        display: none !important;
+    }
+
+    /* BLOG SCREEN SPECIFIC MOBILE ADJUSTMENTS */
+    /* Stack blog layout containers */
+    .blog-screen-grid {
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 auto !important;
+        width: 100% !important;
+    }
+
+    .blog-item-1-cell,
+    .blog-item-2-cell,
+    .blog-item-3-cell,
+    .blog-terminal-cell,
+    .blog-listing,
+    .trending-section,
+    .blog-post-area,
+    .ads-section,
+    .toc-section {
+        grid-column: auto !important;
+        grid-row: auto !important;
+        justify-self: auto !important;
+        align-self: auto !important;
+        width: 100% !important;
+        margin: 0 auto 20px !important;
+        /* Center with auto margins */
+        padding: 0 !important;
+    }
+
+    #blog-container-3 {
+        min-height: auto !important;
+        max-height: 250px !important;
+        height: auto !important;
+    }
+
+    .arrow-container {
+        max-width: auto !important;
+        height: auto !important;
+        width: auto !important;
+        margin: auto !important;
+    }
+
+    .arrow-container {
+        height: auto !important;
+        width: auto !important;
+    }
+
+    /* ===== WINDOW POSITIONING ===== */
+    /* Fix window positioning - stack all windows and ensure they're centered */
+    .window {
+        position: relative !important;
+        top: auto !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: auto !important;
+        transform: none !important;
+        width: calc(100% - 20px) !important;
+        max-width: calc(100% - 20px) !important;
+        margin: 10px auto 20px !important;
+        display: block !important;
+        float: none !important;
+        clear: both !important;
+    }
+
+    .home-main-cell .button-container .custom-button-3,
+    .home-main-cell .button-container .custom-button-4 {
+        display: none;
+    }
+
+    .home-main-cell .button-container {
+        margin-top: 0;
+    }
+
+    /* Create placeholder for Patreon and PayPal buttons in main cell for mobile only */
+    .home-main-cell .content-container {
+        position: relative;
+    }
+
+    .home-main-cell .button-container.mobile-only {
+        display: block;
+    }
+
+    /* Specific styling for mobile donation buttons */
+    .home-main-cell .button-container.mobile-only .image-button {
+        min-width: 160px;
+        max-width: 180px;
+        height: 46px;
+        padding: 8px 16px;
+        margin: 0 auto;
+    }
+
+    /* Adjust image size for mobile buttons */
+    .home-main-cell .button-container.mobile-only .image-button .button-image {
+        max-width: 180px;
+        height: 60px;
+        object-fit: contain;
+    }
+
+    /* Add flex container for buttons to appear side by side on mobile */
+    .mobile-buttons-flex-container {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+
+}
+
+/* Small Phones */
+@media (max-width: 480px) {
+
+    /* Smaller header for very small screens */
+    .layout_header {
+        height: 80px !important;
+        transition: transform 0.3s ease-in-out !important;
+    }
+
+    /* Adjust main content area to match smaller header */
+    .layout_main {
+        margin-top: 80px !important;
+    }
+
+    /* Add ability to hide header when scrolling down (requires JS) */
+    .layout_header.header-hidden {
+        transform: translateY(-100%) !important;
+    }
+
+    /* Reduce padding for tighter content on small screens */
+    .window-content {
+        padding: 15px !important;
+    }
+
+    /* Smaller window titles */
+    .window-title {
+        font-size: 1.25rem !important;
+    }
+
+    .glitch {
+        font-size: 3rem !important;
+    }
+
+    /* Adjust post content padding */
+    .post-content {
+        padding: 0 10px !important;
+    }
+
+    /* Adjust post header */
+    .post-header {
+        padding: 10px !important;
+    }
+
+    /* Smaller fonts for better readability */
+    .post-title {
+        font-size: 1.5rem !important;
+    }
+
+    .post-content h1 {
+        font-size: 1.5rem !important;
+    }
+
+    .post-content h2 {
+        font-size: 1.3rem !important;
+    }
+
+    .post-content h3 {
+        font-size: 1.1rem !important;
+    }
+
+    /* Ensure footer has proper spacing from content */
+    .layout_footer {
+        display: none !important;
+    }
+
+    .powered-by.mobile {
+        display: block !important;
+        position: static;
+        /* Remove fixed positioning on mobile */
+        bottom: auto;
+        right: auto;
+        width: 100%;
+        /* Full width */
+        text-align: center;
+        padding: 10px 0;
+        z-index: 100;
+        /* Lower z-index than fixed elements */
+    }
+
+    .powered-by.desktop {
+        display: none !important;
+    }
+
+}
+
+/* Extremely small screens */
+@media (max-width: 375px) {
+
+    /* Further reduce padding to maximize screen real estate */
+    .window-content {
+        padding: 10px !important;
+    }
+
+    /* Smaller header for very small screens */
+    .layout_header {
+        height: 70px !important;
+    }
+
+    .layout_main {
+        margin-top: 70px !important;
+    }
+}
